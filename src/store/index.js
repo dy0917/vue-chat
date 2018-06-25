@@ -10,9 +10,26 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     db: firebase.database(),
-    auth: firebase.auth()
+    auth: firebase.auth(),
+    loginUser: {}
   },
   modules: {
     account: account
+  },
+  actions: {
+    async login({commit, state }, emailAndPassword){
+
+        var user = await state.auth.signInWithEmailAndPassword('huangkingsley@gmail.com', 'Password1').catch(function(error) {
+                 // Handle Errors here.
+                  state.errorMessage = error.message;
+             });
+             console.log(user);
+    }
+  },
+  mutations: {
+    setToken (state, token) {
+     state.loginUser.token = token
+       console.log(state)
+   }
   }
 })
