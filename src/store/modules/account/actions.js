@@ -1,8 +1,10 @@
+import firebaseApi from '@/apis/firebase'
+
 export default {
-  count ({ commit, state }, params) {
-
+  async createUserProfile({ commit, state }, accountProfile) {
+    var accountProfile = await firebaseApi.setAccount(accountProfile.uid, accountProfile)
   },
-  login({commit, state }, emailAndPassword){
-
+  async getUsers({ commit, state }){
+    return await firebaseApi.get('accountProfiles')
   }
 }

@@ -8,20 +8,25 @@
         </div>
 
         <div style="padding-top:30px" class="panel-body" >
-
-          <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
-
-          <form id="loginform" class="form-horizontal" role="form">
-
-            <div style="margin-bottom: 25px" class="input-group">
+          <form class="ui form">
+            <div class="field" :class="{error: errors.has('username')}">
               <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-              <input v-model="formData.account" type="text" class="form-control" name="username" value="" placeholder="username or email">
+              <input v-model="formData.username" v-validate="'required|email'"
+                     type="text" class="form-control" name="username" value="" placeholder="username or email">
+              <span class="error" v-if="errors.has('username')">{{errors.first('username')}}</span>
             </div>
 
-            <div style="margin-bottom: 25px" class="input-group">
+            <div class="field" :class="{error: errors.has('password')}">
               <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-              <input v-model="formData.password" type="password" class="form-control" name="password" placeholder="password">
+              <input v-model="formData.password" v-validate="'required'"
+                     type="password" class="form-control" name="password" placeholder="password">
+              <span class="error" v-if="errors.has('password')">{{errors.first('password')}}</span>
             </div>
+
+            <div class="field" v-show="errorMessage">
+              <p>{{errorMessage}}</p>
+            </div>
+
 
             <div class="input-group">
               <div class="checkbox">
@@ -33,11 +38,11 @@
 
             <div style="margin-top:10px" class="form-group">
               <!-- Button -->
-
               <div class="col-sm-12 controls">
-                <a v-on:click="login(formData)" class="btn btn-success">Login </a>
-                <!--<a id="btn-fblogin" href="#" class="btn btn-primary">Login with Facebook</a>-->
-
+                <a v-on:click="onLogin(formData)" class="btn btn-success" :disabled="isLoading == 1">
+                  <span v-show="isLoading"><icon name="spinner" pulse></icon></span>
+                  Login
+                </a>
               </div>
             </div>
 
@@ -45,7 +50,7 @@
               <div class="col-md-12 control">
                 <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%" >
                   Don't have an account!
-                  <router-link to="register"> Sign Up Here</router-link>
+                  <router-link to="signup"> Sign Up Here</router-link>
                 </div>
               </div>
             </div>
@@ -53,7 +58,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 

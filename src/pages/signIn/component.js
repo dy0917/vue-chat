@@ -1,40 +1,54 @@
+import firebaseApi from '@/apis/firebase'
+
 export default {
-  name: 'signIn',
   data () {
     return {
-      formData: { },
-        msg: 'Welcome to Your Vue.js App'
+      isLoading: false,
+      formData: {
+       account: null,
+       password: null
+       },
+      errorMessage: null,
       }
     },
+
+    watch: {
+      'formData': {
+        handler(){
+          this.errorMessage=""
+        },
+        deep: true
+      }
+    },
+
+
+    async created() {
+      var loginUser = this.$store.getters.loginUser
+      if(loginUser){
+          this.$router.push({ path: 'chatRoom' })
+          return
+      }
+    },
+
     methods: {
-      async login() {
-
-//      this.$store.dep('account/increment')
-//    console.log(this.$store.state.db.ref('accounts'))
-//
-//    var accountsRef = this.$store.state.db.ref('accounts')
-//    accountsRef.once('value', function(snapshot) {
-//      snapshot.forEach(function(childSnapshot) {
-//        var childKey = childSnapshot.key;
-//        var childData = childSnapshot.val();
-//        console.log(childData);
-//      });
-//    });
-
-      this.$store.dispatch('login', {email: 'huangkingsley@gmail.com', password: 'Password1'});
-
-//       this.$store.state.auth.signInWithEmailAndPassword('huangkingsley@gmail.com', 'Password1').then((user)=>{
-//          console.log(user);
-//          }).catch(function(error) {
-//                                         // Handle Errors here.
-//                                          state.errorMessage = error.message;
-//                                     });
-
-//      console.log(accountsRef.child('1qq'));
-//        this.$store.dispatch('account/count',{id:"111111"})
-//         this.$store.commit('account/increment')
-//
-//         console.log(this.$store.getters['account/getCount'])
+      async onLogin(formData) {
+        this.errorMessage=null
+        await this.$validator.validateAll()
+          if (!this.errors.any()) {
+              this.isLoading = true
+              var reference = await this.$store.dispatch('login', formData).catch(e=>{
+                this.isLoading = false
+                this.errorMessage=e.message
+              }).finally(()=>{
+                this.isLoading = false
+              })
+              var uid = reference.user.uid
+              firebaseApi.getUserAccountByIdAsync(uid).then((user)=>{
+                  this.$store.commit('setLoginUser', user)
+                  this.$store.commit('setHasLoaded', true)
+                  this.$router.push({ path: 'chatRoom' })
+              })
+          }
       }
     },
 };

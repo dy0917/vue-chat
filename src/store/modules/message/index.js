@@ -5,6 +5,7 @@ import mutations from './mutations'
 export default {
   namespaced: true,
   state: {
+    messages:[{name:'ddddd'}],
   },
   mutations,
   getters,
